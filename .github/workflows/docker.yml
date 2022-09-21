@@ -14,8 +14,29 @@ jobs:
       matrix:
         docker_tag:
           - base-torch1.8.2-cpu-python3.8
-          - base-torch1.8.2-cuda11.3.0-runtime-ubuntu20.04
+          - base-torch1.12.1-cpu-python3.8
+          - base-torch1.12.1-cpu-python3.9
+          - base-torch1.12.1-cpu-python3.10
           - base-torch1.12.1-cuda10.2-cudnn8-runtime-ubuntu18.04
+          - base-torch1.12.1-cuda10.2-cudnn8-runtime-ubuntu20.04
+          #- base-torch1.12.1-cuda10.2-runtime-ubuntu18.04
+          #- base-torch1.12.1-cuda10.2-runtime-ubuntu20.04
+          - base-torch1.12.1-cuda11.1.1-cudnn8-runtime-ubuntu20.04
+          #- base-torch1.12.1-cuda11.1.1-runtime-ubuntu20.04
+          #- base-torch1.12.1-cuda11.3.0-cudnn8-runtime-ubuntu20.04
+          - base-torch1.12.1-cuda11.3.0-runtime-ubuntu20.04
+          #- base-torch1.12.1-cuda11.6.2-cudnn8-runtime-ubuntu20.04
+          #- base-torch1.12.1-cuda11.6.2-runtime-ubuntu20.04
+          #- base-torch1.8.2-cuda10.2-cudnn8-runtime-ubuntu18.04
+          #- base-torch1.8.2-cuda10.2-cudnn8-runtime-ubuntu20.04
+          #- base-torch1.8.2-cuda10.2-runtime-ubuntu18.04
+          #- base-torch1.8.2-cuda10.2-runtime-ubuntu20.04
+          #- base-torch1.8.2-cuda11.1.1-cudnn8-runtime-ubuntu20.04
+          #- base-torch1.8.2-cuda11.1.1-runtime-ubuntu20.04
+          #- base-torch1.8.2-cuda11.3.0-cudnn8-runtime-ubuntu20.04
+          #- base-torch1.8.2-cuda11.3.0-runtime-ubuntu20.04
+          #- base-torch1.8.2-cuda11.6.2-cudnn8-runtime-ubuntu20.04
+          #- base-torch1.8.2-cuda11.6.2-runtime-ubuntu20.04
 
     steps:
       -

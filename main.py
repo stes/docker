@@ -130,8 +130,11 @@ class TemplateFile:
 if __name__ == "__main__":
     output_dir = pathlib.Path(".")
     output_dir.mkdir(exist_ok=True)
+
     for name, config in TemplateFile("build_matrix.yaml"):
         print(f"=================== {name} ===================")
         print(config)
         with (output_dir / f"Dockerfile.{name}").open("w") as fh:
             fh.write(config)
+
+    

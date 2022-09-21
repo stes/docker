@@ -43,7 +43,7 @@ cpu_only:
             RUN {pip_install} torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cpu
 
 cuda:
-    name: "base-torch{torch}-cuda{cuda_version}-{cuda_variant}-ubuntu{ubuntu}"
+    name: "base-torch{torch}-python{python}-cuda{cuda_version}-{cuda_variant}-ubuntu{ubuntu}"
     template: |
         FROM nvidia/cuda:{cuda_version}-{cuda_variant}-ubuntu{ubuntu}
         {apt_install_common}
