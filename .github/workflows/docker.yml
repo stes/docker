@@ -7,7 +7,16 @@ on:
 
 jobs:
   docker:
+    
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        docker_tag:
+          - base-torch1.8.2-cpu-python3.8
+          - base-torch1.8.2-cuda11.3.0-runtime-ubuntu20.04
+          - base-torch1.12.1-cuda10.2-cudnn8-runtime-ubuntu18.04
+
     steps:
       -
         name: Set up QEMU
@@ -25,6 +34,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          file: Dockerfile.base-torch1.8.2-cpu-python3.8 
+          file: Dockerfile.${{ matrix.docker_tag }} 
           push: true 
-          tags: stffsc/cebra-testing:base-torch1.8.2-cpu-python3.8
+          tags: stffsc/cebra-testing:${{ matrix.docker_tag }}
