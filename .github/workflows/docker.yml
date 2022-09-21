@@ -17,6 +17,7 @@ jobs:
           - base-torch1.8.2-cuda11.3.0-runtime-ubuntu20.04
           - base-torch1.12.1-cuda10.2-cudnn8-runtime-ubuntu18.04
 
+    steps:
       -
         uses: actions/checkout@v3
         with:
