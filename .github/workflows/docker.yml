@@ -81,6 +81,6 @@ jobs:
           file: Dockerfile.template.devel
           push: false 
           tags: stffsc/cebra-testing:${{ matrix.docker_tag }}
-          build_args:
-            - BASEIMAGE: stffsc/cebra-testing:${{ matrix.docker_tag }}
+          build-args:
+            - "BASEIMAGE=stffsc/cebra-testing:${{ matrix.docker_tag }}"
 
