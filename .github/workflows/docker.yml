@@ -26,5 +26,5 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           file: Dockerfile.base-torch1.8.2-cpu-python3.8 
-          push: false 
-          tags: stffsc/base-torch1.8.2-cpu-python3.8
+          push: true 
+          tags: stffsc/cebra-testing:base-torch1.8.2-cpu-python3.8
