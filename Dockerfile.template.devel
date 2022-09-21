@@ -1,0 +1,20 @@
+ARG BASEIMAGE
+FROM $BASEIMAGE
+RUN pip install --no-cache-dir  sklearn scipy matplotlib seaborn scipy pandas umap-learn opentsne 'h5py < 3.0.0' \
+        keras==2.3.1 tensorflow==2.2.0 protobuf==3.20 \
+        ffmpeg-python 'cryptography<=3.3.2' \
+        git+https://github.com/neurallatents/nlb_tools.git \
+        opencv-python==4.5.5.64 \
+        Cython \
+        virtualenv \
+        ripser \
+        pylint yapf isort coverage \
+        pytest pytest-benchmark pytest-xdist pytest-timeout \
+        joblib tqdm literate-dataclasses==0.0.4a \
+        jupyter tables
+RUN pip install --no-cache-dir  sphinx \
+    'docutils<0.17' \
+    pydata-sphinx-theme \
+    sphinx_autodoc_typehints \
+    sphinx_copybutton
+

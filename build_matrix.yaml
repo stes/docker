@@ -2,132 +2,160 @@
 
 # common templates used below
 _alias:
-    pip_install: "pip install --no-cache-dir "
-    apt_get_install: "apt-get install -yy --no-install-recommends"
+  pip_install: "pip install --no-cache-dir "
+  apt_get_install: "apt-get install -yy --no-install-recommends"
 
 _templates:
-    apt_install_common: |
-        RUN apt-get update -yy
-        RUN {apt_get_install} \
-            git curl wget build-essential libhdf5-dev \
-            libgl1-mesa-glx libglib2.0-0 software-properties-common
-    apt_clean: |
-        RUN apt-get clean
-        RUN rm -rf /var/lib/apt/lists/*
+  apt_install_common: |
+    RUN apt-get update -yy
+    RUN {apt_get_install} \
+      git curl wget build-essential libhdf5-dev \
+      libgl1-mesa-glx libglib2.0-0 software-properties-common
+  apt_clean: |
+    RUN apt-get clean
+    RUN rm -rf /var/lib/apt/lists/*
+  install_devel_dependencies: |
+    RUN {pip_install} sklearn scipy matplotlib seaborn scipy pandas umap-learn opentsne 'h5py < 3.0.0' \
+            keras==2.3.1 tensorflow==2.2.0 protobuf==3.20 \
+            ffmpeg-python 'cryptography<=3.3.2' \
+            git+https://github.com/neurallatents/nlb_tools.git \
+            opencv-python==4.5.5.64 \
+            Cython \
+            virtualenv \
+            ripser \
+            pylint yapf isort coverage \
+            pytest pytest-benchmark pytest-xdist pytest-timeout \
+            joblib tqdm literate-dataclasses==0.0.4a \
+            jupyter tables
+    RUN {pip_install} sphinx \
+        'docutils<0.17' \
+        pydata-sphinx-theme \
+        sphinx_autodoc_typehints \
+        sphinx_copybutton
 
 cpu_only:
-    name: "base-torch{torch}-cpu-python{python}"
-    template: |
-        FROM python:{python}
-        {install_torch}
-    matrix:
-        python:
-            - "3.8"
-            - "3.9"
-            - "3.10"
-        torch:
-            - "1.8.2" 
-            - "1.12.1"
-    requires:
-        - torch: "1.8.2"
-          python: "3.8"
+  name: "base-torch{torch}-cpu-python{python}"
+  template: |
+    FROM python:{python}
+    {install_torch}
+  matrix:
+    python:
+      - "3.8"
+      - "3.9"
+      - "3.10"
+    torch:
+      - "1.8.2" 
+      - "1.12.1"
+  requires:
+    - torch: "1.8.2"
+      python: "3.8"
 
-    extend:
-        - torch: "1.8.2"
-          cuda: "cpu"
-          install_torch: |
-            RUN {pip_install} torch==1.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cpu
-        - torch: "1.12.1"
-          cuda: "cpu"
-          install_torch: |
-            RUN {pip_install} torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cpu
+  extend:
+    - torch: "1.8.2"
+      cuda: "cpu"
+      install_torch: |
+        RUN {pip_install} torch==1.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cpu
+    - torch: "1.12.1"
+      cuda: "cpu"
+      install_torch: |
+        RUN {pip_install} torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cpu
 
 cuda:
-    name: "base-torch{torch}-python{python}-cuda{cuda_version}-{cuda_variant}-ubuntu{ubuntu}"
-    template: |
-        FROM nvidia/cuda:{cuda_version}-{cuda_variant}-ubuntu{ubuntu}
-        {apt_install_common}
-        ENV PYTHON_VERSION {python}
-        {install_python}
-        {apt_clean}
-        {install_torch}
-    matrix:
-        ubuntu:
-            - "18.04"
-            - "20.04"
-        cuda_version:
-            - "10.2"
-            - "11.1.1"
-            - "11.3.0"
-            - "11.6.2"
-        cuda_variant:
-            - runtime
-            - cudnn8-runtime
-        python:
-            - "3.8"
-            - "3.9"
-            - "3.10"
-        torch:
-            - "1.8.2"
-            - "1.12.1"
+  name: "base-torch{torch}-python{python}-cuda{cuda_version}-{cuda_variant}-ubuntu{ubuntu}"
+  template: |
+    FROM nvidia/cuda:{cuda_version}-{cuda_variant}-ubuntu{ubuntu}
+    {apt_install_common}
+    ENV PYTHON_VERSION {python}
+    {install_python}
+    {apt_clean}
+    {install_torch}
+  matrix:
+    ubuntu:
+      - "18.04"
+      - "20.04"
+    cuda_version:
+      - "10.2"
+      #- "11.1.1"
+      - "11.3.0"
+      #- "11.6.2"
+    cuda_variant:
+      - runtime
+      #- cudnn8-runtime
+    python:
+      - "3.8"
+      #- "3.9"
+      - "3.10"
+    torch:
+      - "1.8.2"
+      - "1.12.1"
 
-    # List of all hard requirements between package versions
-    requires:
-        - ubuntu: "18.04"
-          cuda_version: "10.2"
-          python: "3.8"
-        - torch: "1.8.2"
-          python: "3.8"
+  # List of all hard requirements between package versions
+  requires:
+    - cuda_version: "10.2"
+      ubuntu: "18.04"
+      python: "3.8"
+    - torch: "1.8.2"
+      python: "3.8"
 
-    # List of all conflicting package versions. Need to use the
-    # same keys as the build matrix above
-    conflicts: []
+  # List of all conflicting package versions. Need to use the
+  # same keys as the build matrix above
+  conflicts: []
 
-    # List of all keys that should be complemented. 
-    extend:
-        # Torch install routines
-        - torch: "1.8.2"
-          cuda: "10.2"
-          install_torch: |
-            RUN {pip_install} torch==1.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cu102
+  # List of all keys that should be complemented. 
+  extend:
+    # Torch install routines
+    - torch: "1.8.2"
+      cuda: "10.2"
+      install_torch: |
+        RUN {pip_install} torch==1.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cu102
 
-        - torch: "1.8.2"
-          cuda: ["11.1", "11.3"]
-          install_torch: |
-            RUN {pip_install} torch==1.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cu113
+    - torch: "1.8.2"
+      cuda: ["11.1", "11.3"]
+      install_torch: |
+        RUN {pip_install} torch==1.8.2 --extra-index-url https://download.pytorch.org/whl/lts/1.8/cu113
 
-        - torch: "1.12.1"
-          cuda: "10.2"
-          install_torch: |
-            RUN {pip_install} torch==1.12.1
+    - torch: "1.12.1"
+      cuda: "10.2"
+      install_torch: |
+        RUN {pip_install} torch==1.12.1
 
-        - torch: "1.12.1"
-          cuda: "11.3"
-          install_torch: |
-            RUN {pip_install} torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
+    - torch: "1.12.1"
+      cuda: "11.3"
+      install_torch: |
+        RUN {pip_install} torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cu113
 
-        - torch: "1.12.1"
-          cuda: "11.6"
-          install_torch: |
-            RUN {pip_install} torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cu116
+    - torch: "1.12.1"
+      cuda: "11.6"
+      install_torch: |
+        RUN {pip_install} torch==1.12.1 --extra-index-url https://download.pytorch.org/whl/cu116
 
-        # Python install routines
-        - ubuntu: "18.*"
-          install_python: |
-            RUN add-apt-repository ppa:deadsnakes/ppa \
-             && apt-get update -yy \
-             && {apt_get_install} python3.8 python3.8-distutils python3.8-dev \
-             && rm -f /usr/bin/python3 /usr/bin/python \
-             && ln -s /usr/bin/python3.8 /usr/bin/python3 \
-             && ln -s /usr/bin/python3.8 /usr/bin/python \
-             && wget -q https://bootstrap.pypa.io/get-pip.py \
-             && python get-pip.py
+    # Python install routines
+    - ubuntu: "18.*"
+      install_python: |
+        RUN add-apt-repository ppa:deadsnakes/ppa \
+        && apt-get update -yy \
+        && {apt_get_install} python3.8 python3.8-distutils python3.8-dev \
+        && rm -f /usr/bin/python3 /usr/bin/python \
+        && ln -s /usr/bin/python3.8 /usr/bin/python3 \
+        && ln -s /usr/bin/python3.8 /usr/bin/python \
+        && wget -q https://bootstrap.pypa.io/get-pip.py \
+        && python get-pip.py
 
-        - ubuntu: "2*.*"
-          install_python: |
-            RUN add-apt-repository ppa:deadsnakes/ppa
-            RUN apt-cache policy python${PYTHON_VERSION}
-            RUN {apt_get_install} \
-                python{PYTHON_VERSION} \
-                python{PYTHON_VERSION}-pip \
-                python{PYTHON_VERSION}-dev
+    - ubuntu: "2*.*"
+      install_python: |
+        RUN add-apt-repository ppa:deadsnakes/ppa
+        RUN apt-cache policy python${PYTHON_VERSION}
+        RUN {apt_get_install} \
+          python{PYTHON_VERSION} \
+          python{PYTHON_VERSION}-pip \
+          python{PYTHON_VERSION}-dev
+
+cebra_devel:
+  name: "template.devel"
+  template: |
+    ARG BASEIMAGE
+    FROM $BASEIMAGE
+    {install_devel_dependencies}
+
+  matrix:
+    defaults: [0]

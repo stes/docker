@@ -1,4 +1,4 @@
-FROM nvidia/cuda:10.2-runtime-ubuntu18.04
+FROM nvidia/cuda:11.3.0-runtime-ubuntu18.04
 RUN apt-get update -yy
 RUN apt-get install -yy --no-install-recommends \
   git curl wget build-essential libhdf5-dev \

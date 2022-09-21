@@ -15,13 +15,13 @@ jobs:
         docker_tag:
           # CPU versions
           - base-torch1.8.2-cpu-python3.8
-          - base-torch1.12.1-cpu-python3.8
-          - base-torch1.12.1-cpu-python3.9
-          - base-torch1.12.1-cpu-python3.10
+          #- base-torch1.12.1-cpu-python3.8
+          #- base-torch1.12.1-cpu-python3.9
+          #- base-torch1.12.1-cpu-python3.10
           # A few CUDA tests
-          - base-torch1.12.1-python3.8-cuda11.1.1-runtime-ubuntu20.04
-          - base-torch1.12.1-python3.9-cuda10.2-cudnn8-runtime-ubuntu18.04
-          - base-torch1.12.1-python3.10-cuda10.2-cudnn8-runtime-ubuntu20.04
+          #- base-torch1.12.1-python3.8-cuda11.1.1-runtime-ubuntu20.04
+          #- base-torch1.12.1-python3.9-cuda10.2-cudnn8-runtime-ubuntu18.04
+          #- base-torch1.12.1-python3.10-cuda10.2-cudnn8-runtime-ubuntu20.04
 
     steps:
       -
@@ -65,10 +65,22 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
-        name: Build and push
+        name: base - Build and push 
         uses: docker/build-push-action@v3
         if: steps.changed-files-specific.outputs.any_changed == 'true'
         with:
           file: Dockerfile.${{ matrix.docker_tag }} 
           push: true 
           tags: stffsc/cebra-testing:${{ matrix.docker_tag }}
+
+      -
+        name: devel - Build and push
+        uses: docker/build-push-action@v3
+        if: steps.changed-files-specific.outputs.any_changed == 'true'
+        with:
+          file: Dockerfile.template.devel
+          push: false 
+          tags: stffsc/cebra-testing:${{ matrix.docker_tag }}
+          build_args:
+            - BASEIMAGE=stffsc/cebra-testing:${{ matrix.docker_tag }}
+
